@@ -12,7 +12,7 @@ RUN pip install --upgrade pip setuptools wheel
 RUN pip install -r requirements.txt
 
 # Expose port for FastAPI/Flask
-EXPOSE 8888
+EXPOSE 8080
 
 # Command to run FastAPI backend
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8888"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
