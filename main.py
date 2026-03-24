@@ -23,6 +23,19 @@ agent = SonicAgent()
 async def analyze_song(request: SongRequest):
     try:
         result = agent.analyze(request.song, request.artist)
-        return result
+        return {
+            "metadata": {
+                "title": request.song,
+                "artist": request.artist,
+                "album": "...",  # extract from result
+            },
+            "features": {
+                "duration": None,
+                "explicit": None,
+            },
+            "chords": [],
+            "mode": None,
+            "analysis": result  # the raw string for now
+        }
     except Exception as e:
         return {"error": str(e)}
