@@ -1,22 +1,27 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from agent import SonicAgent
 
-# Initialize FastAPI app
 app = FastAPI(title="Sonic AI API")
 
-# Request payload schema
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://kevin-martinez-portfolio-frontend.onrender.com"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class SongRequest(BaseModel):
     song: str
     artist: str
 
-# Minimal SonicAgent placeholder (importable)
 agent = SonicAgent()
 
 @app.post("/analyze")
 async def analyze_song(request: SongRequest):
     try:
-        # Call your SonicAgent (replace with your real logic)
         result = agent.analyze(request.song, request.artist)
         return result
     except Exception as e:
