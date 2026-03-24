@@ -1,4 +1,6 @@
 fastapi==0.115.1
-uvicorn==0.23.1
+uvicorn==0.23.2
+flask==2.3.4
 requests==2.31.0
 openai==1.31.0
+python-dotenv==1.0.0

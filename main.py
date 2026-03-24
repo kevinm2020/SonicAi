@@ -1,15 +1,23 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
 from agent import SonicAgent
 
-def main():
-    agent = SonicAgent()
+# Initialize FastAPI app
+app = FastAPI(title="Sonic AI API")
 
-    song = input("Enter a song name: ")
-    artist = input("Enter the artist name: ")
+# Request payload schema
+class SongRequest(BaseModel):
+    song: str
+    artist: str
 
-    result = agent.analyze(song, artist)
+# Minimal SonicAgent placeholder (importable)
+agent = SonicAgent()
 
-    print("Analysis Result:")
-    print(result)
-
-if __name__ == "__main__":
-    main()
+@app.post("/analyze")
+async def analyze_song(request: SongRequest):
+    try:
+        # Call your SonicAgent (replace with your real logic)
+        result = agent.analyze(request.song, request.artist)
+        return result
+    except Exception as e:
+        return {"error": str(e)}
