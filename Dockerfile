@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . /app
 
 # Upgrade pip and install dependencies
-RUN pip install --upgrade pip
+RUN pip install --upgrade pip setuptools wheel
 RUN pip install -r requirements.txt
 
 # Expose port for FastAPI/Flask
