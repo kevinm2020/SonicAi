@@ -39,3 +39,15 @@ async def analyze_song(request: SongRequest):
         }
     except Exception as e:
         return {"error": str(e)}
+    
+@app.get("/ping")
+async def ping():
+    return {"status": "ok"}
+
+@app.get("/health")
+async def health_check():
+    return {
+        "status": "ok",
+        "service": "sonic-ai",
+        "agent_loaded": agent is not None
+    }
