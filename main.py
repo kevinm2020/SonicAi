@@ -7,7 +7,11 @@ app = FastAPI(title="Sonic AI API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://kevin-martinez-portfolio-frontend.onrender.com"],
+    allow_origins=[
+    "https://kevin-martinez-portfolio-frontend.onrender.com",
+    "http://localhost:5173"
+    ],
+    
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
