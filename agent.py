@@ -13,6 +13,7 @@ class SonicAgent:
 
         # Step 2: Spotify features
         spotify_features = get_spotify_features(song_name, artist_name)
+        print("SPOTIFY FEATURES:", spotify_features)
         if spotify_features is None:
             spotify_features = {}
 
@@ -25,8 +26,7 @@ class SonicAgent:
         combined_data = {
             "metadata": metadata,
             "features": {
-                "spotify": spotify_features,
-                "acoustic": spotify_features
+                "spotify": spotify_features
             },
             "chords": chords
         }
