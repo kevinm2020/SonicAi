@@ -30,7 +30,7 @@ class SonicAgent:
         # Step 4: Chords
         chords = get_chords(metadata)
         if chords is None:
-            chords = {"chords": None}  # neutral placeholder
+            chords = {"chords": chords}  
 
         debug_log("Chords", chords)
 
@@ -41,7 +41,7 @@ class SonicAgent:
                 "spotify": spotify_features,
                 "acoustic": acoustic_features
             },
-            "chords": chords
+            "chords": None
         }
         debug_log("Combined Data", combined_data)
 
@@ -54,3 +54,11 @@ class SonicAgent:
         debug_log("LLM Output", analysis)
 
         return analysis
+    
+
+
+#This is the main agent. It orchestrates the entire process of fetching data from various APIs, 
+# combining it, and then sending it to the LLM for analysis. 
+# Each step includes error handling and debug logging to ensure we can trace the flow of data 
+# and identify any issues that arise.
+

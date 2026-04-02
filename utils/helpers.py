@@ -1,4 +1,4 @@
-def clean_song_name(song_name: str ) -> str:
+def clean_song_name(song_name: str) -> str:
     return song_name.strip().lower()
 
 def safe_get(d, key, default=None):
@@ -7,25 +7,41 @@ def safe_get(d, key, default=None):
 def format_for_llm(data: dict) -> str:
     features = data.get("features", {})
     metadata = data.get("metadata", {})
-    spotify = features.get("spotify", {})  
-    chords = data.get("chords", {}).get("chords", [])
+    spotify = features.get("spotify", {})
+    acoustic = features.get("acoustic", {})  # ✅ FIX: pull acoustic as its own dict
 
-    album = spotify.get("album") or metadata.get("album")  
+    # ✅ FIX: read tempo/energy/danceability from acoustic, not top-level features
+    tempo = acoustic.get("tempo", "Unknown")
+    energy = acoustic.get("energy", "Unknown")
+    danceability = acoustic.get("danceability", "Unknown")
+    valence = acoustic.get("valence", "Unknown")
+
+    album = spotify.get("album") or metadata.get("album", "Unknown")
 
     duration_ms = spotify.get("duration_ms")
     duration_sec = round(duration_ms / 1000, 1) if duration_ms else "Unknown"
 
+    popularity = spotify.get("popularity", "Unknown")
+    explicit = "Yes" if spotify.get("explicit") else "No"
+
+    # ✅ FIX: safely handle chords — data["chords"] could be None or a dict
+    chords_data = data.get("chords") or {}
+    chords = chords_data.get("chords", []) if isinstance(chords_data, dict) else []
+
     return f"""
     Song: {metadata.get('title', 'Unknown')}
     Artist: {metadata.get('artist', 'Unknown')}
-    Album: {album or 'Unknown'}
-
-    Tempo: {features.get('tempo', 'Unknown')} BPM
-    Energy: {features.get('energy', 'Unknown')}
-    Danceability: {features.get('danceability', 'Unknown')}
+    Album: {album}
+    Release Date: {metadata.get('release_date', 'Unknown')}
 
     Duration: {duration_sec} seconds
-    Explicit: {"Yes" if spotify.get("explicit") else "No"}
+    Explicit: {explicit}
+    Popularity (Spotify): {popularity}/100
+
+    Tempo: {tempo} BPM
+    Energy: {energy}
+    Danceability: {danceability}
+    Valence: {valence}
 
     Chords: {', '.join(chords) if chords else 'Unknown'}
     """
