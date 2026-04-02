@@ -27,31 +27,43 @@ class SongRequest(BaseModel):
 @app.post("/analyze")
 async def analyze_song(request: SongRequest):
     try:
-        # ✅ Step 1: Get Spotify data
+        # Step 1: Get Spotify features
         features = get_spotify_features(request.song, request.artist)
 
-        # ✅ Step 2: Run LLM analysis
-        analysis = analyze_with_llm(features)
+        # Step 2: Run LLM analysis (expects dict → returns string)
+        analysis_text = analyze_with_llm(features)
 
-        # ✅ Step 3: Build clean response
+        # Step 3: Build response matching frontend expectations
         return {
             "metadata": {
                 "title": features.get("title"),
                 "artist": features.get("artist"),
                 "album": features.get("album"),
-                "popularity": features.get("popularity"),
+                "release_date": features.get("release_date"),
             },
             "features": {
-                "tempo": features.get("tempo"),
-                "energy": features.get("energy"),
-                "danceability": features.get("danceability"),
-                "valence": features.get("valence"),
-                "mode": features.get("mode"),
-                "key": features.get("key"),
-                "acousticness": features.get("acousticness"),
-                "instrumentalness": features.get("instrumentalness"),
+                "spotify": {
+                    "duration_ms": features.get("duration_ms"),
+                    "explicit": features.get("explicit"),
+                    "popularity": features.get("popularity"),
+                    "tempo": features.get("tempo"),
+                    "energy": features.get("energy"),
+                    "danceability": features.get("danceability"),
+                    "valence": features.get("valence"),
+                    "mode": features.get("mode"),
+                    "key": features.get("key"),
+                    "loudness": features.get("loudness"),
+                    "speechiness": features.get("speechiness"),
+                    "acousticness": features.get("acousticness"),
+                    "instrumentalness": features.get("instrumentalness"),
+                    "liveness": features.get("liveness"),
+                    "time_signature": features.get("time_signature"),
+                }
             },
-            "analysis": analysis.get("analysis", {}),
+            "chords": {
+                "chords": features.get("chords", [])
+            },
+            "analysis": analysis_text
         }
 
     except Exception as e:
