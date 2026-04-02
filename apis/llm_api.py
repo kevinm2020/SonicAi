@@ -41,5 +41,7 @@ def analyze_with_llm(prompt: str) -> str:
         print("OpenAI request failed:", e)
         return "--- Sonic AI Analysis (Fallback) ---\nLLM failed"
     
-
+#challenges
 #AcosticBrains was shut down in 2022, so we need to handle that gracefully.
+#update frontend
+#have to change prompt and temparture

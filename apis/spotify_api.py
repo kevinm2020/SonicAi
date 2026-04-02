@@ -12,7 +12,7 @@ import base64
 CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 REDIRECT_URI = os.getenv("SPOTIFY_REDIRECT_URI", "http://127.0.0.1:8888/callback")
-TOKEN_FILE = ".spotify_token.json"  # persist refresh token
+TOKEN_FILE = ".spotify_token.json"
 
 SCOPES = "user-read-private user-read-email"
 
@@ -91,7 +91,7 @@ def exchange_code_for_token(code):
     response = requests.post(url, data=payload)
     response.raise_for_status()
     tokens = response.json()
-    save_tokens(tokens)  # save refresh token
+    save_tokens(tokens)
     return tokens
 
 def refresh_access_token():
@@ -132,7 +132,7 @@ def callback():
 # SPOTIFY API FUNCTIONS
 # --------------------
 def search_track(song_name, artist_name):
-    token = get_access_token()  # ✅ now valid
+    token = get_access_token()
 
     url = "https://api.spotify.com/v1/search"
 
@@ -155,7 +155,6 @@ def search_track(song_name, artist_name):
 
     data = response.json()
 
-    # ✅ FIX: extract track correctly
     items = data.get("tracks", {}).get("items", [])
     if not items:
         return None
@@ -186,9 +185,30 @@ def get_spotify_features(song_name, artist_name):
     if not track:
         return {}
 
-    return {
+    track_id = track.get("id")
+
+    # Base track metadata
+    features = {
         "popularity": track.get("popularity"),
         "duration_ms": track.get("duration_ms"),
         "explicit": track.get("explicit"),
         "album": track.get("album", {}).get("name")
     }
+
+    # Merge audio features from Spotify 
+    audio = get_audio_features(track_id) or {}
+    features["tempo"] = audio.get("tempo")
+    features["energy"] = audio.get("energy")
+    features["danceability"] = audio.get("danceability")
+    features["valence"] = audio.get("valence")
+    features["mode"] = "Major" if audio.get("mode") == 1 else "Minor"
+    features["key"] = audio.get("key")
+    features["loudness"] = audio.get("loudness")
+    features["speechiness"] = audio.get("speechiness")
+    features["acousticness"] = audio.get("acousticness")
+    features["instrumentalness"] = audio.get("instrumentalness")
+    features["liveness"] = audio.get("liveness")
+    features["time_signature"] = audio.get("time_signature")
+
+    debug_log("Spotify Features", features)
+    return features
