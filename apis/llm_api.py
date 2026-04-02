@@ -40,18 +40,11 @@ def analyze_with_llm(features: dict) -> dict:
         )
 
         content = response.choices[0].message.content
-        return json.loads(content)
+        return content
 
     except Exception as e:
         print("LLM error:", e)
-        return {
-            "analysis": {
-                "tempo_energy": "N/A",
-                "danceability_mood": "N/A",
-                "harmony": "N/A",
-                "overall_character": "N/A"
-            }
-        }
+        return "Error generating analysis."
     
 #challenges
 #AcosticBrains was shut down in 2022, so we need to handle that gracefully.

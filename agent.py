@@ -35,7 +35,13 @@ class SonicAgent:
         formatted = format_for_llm(combined_data)
 
         # Step 6: LLM analysis
-        analysis = analyze_with_llm(formatted)
+        analysis_raw = analyze_with_llm(formatted)
+
+        if isinstance(analysis_raw, dict):
+            analysis_text = analysis_raw.get("analysis", "")
+        else:
+            analysis_text = analysis_raw
+
 
         # Step 7: Return FULL STRUCTURE (not just string)
         return {
@@ -44,7 +50,7 @@ class SonicAgent:
                 "spotify": spotify_features
             },
             "chords": chords,
-            "analysis": analysis
+            "analysis": analysis_text
         }
 
 
