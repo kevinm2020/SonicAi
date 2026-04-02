@@ -7,24 +7,22 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 SYSTEM_PROMPT = """
 You are a music analysis engine.
 
-Given song metadata and audio features, generate a structured analysis.
+Given song metadata and audio features, generate a structured musical analysis.
 
-Return ONLY valid JSON with this structure:
+Return your response in clean markdown format using the following sections:
 
-{
-  "analysis": {
-    "tempo_energy": "",
-    "danceability_mood": "",
-    "harmony": "",
-    "overall_character": ""
-  }
-}
+## Tempo & Energy
+## Danceability & Mood
+## Harmony
+## Overall Character
 
-Rules:
-- Use ONLY the provided data.
-- If something is unknown, say so briefly.
-- Do NOT include metadata in your response.
-- Do NOT include any text outside JSON.
+Guidelines:
+- Base your analysis ONLY on the provided data.
+- If something is unknown, state it briefly.
+- Be concise but insightful.
+- Do NOT return JSON.
+- Do NOT include code blocks.
+- Do NOT include metadata.
 """
 
 
