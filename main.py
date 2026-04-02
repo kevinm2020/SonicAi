@@ -27,49 +27,29 @@ class SongRequest(BaseModel):
 @app.post("/analyze")
 async def analyze_song(request: SongRequest):
     try:
-        # Step 1: Get Spotify features
-        features = get_spotify_features(request.song, request.artist)
+        result = agent.analyze(request.song, request.artist)
 
-        # Step 2: Run LLM analysis (expects dict → returns string)
-        analysis_text = analyze_with_llm(features)
+        # If agent fails and returns a string error
+        if isinstance(result, str):
+            return {
+                "metadata": {
+                    "title": request.song,
+                    "artist": request.artist,
+                    "album": "Unknown"
+                },
+                "features": {
+                    "spotify": {}
+                },
+                "chords": {
+                    "chords": []
+                },
+                "analysis": result
+            }
 
-        # Step 3: Build response matching frontend expectations
-        return {
-            "metadata": {
-                "title": features.get("title"),
-                "artist": features.get("artist"),
-                "album": features.get("album"),
-                "release_date": features.get("release_date"),
-            },
-            "features": {
-                "spotify": {
-                    "duration_ms": features.get("duration_ms"),
-                    "explicit": features.get("explicit"),
-                    "popularity": features.get("popularity"),
-                    "tempo": features.get("tempo"),
-                    "energy": features.get("energy"),
-                    "danceability": features.get("danceability"),
-                    "valence": features.get("valence"),
-                    "mode": features.get("mode"),
-                    "key": features.get("key"),
-                    "loudness": features.get("loudness"),
-                    "speechiness": features.get("speechiness"),
-                    "acousticness": features.get("acousticness"),
-                    "instrumentalness": features.get("instrumentalness"),
-                    "liveness": features.get("liveness"),
-                    "time_signature": features.get("time_signature"),
-                }
-            },
-            "chords": {
-                "chords": features.get("chords", [])
-            },
-            "analysis": analysis_text
-        }
+        return result
 
     except Exception as e:
-        return {
-            "error": str(e)
-        }
+        return {"error": str(e)}
 
 
 @app.get("/ping")
