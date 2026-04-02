@@ -26,7 +26,7 @@ Guidelines:
 """
 
 
-def analyze_with_llm(features: dict) -> dict:
+def analyze_with_llm(features: dict) -> str:
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
