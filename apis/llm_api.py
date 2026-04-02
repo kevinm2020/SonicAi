@@ -1,45 +1,57 @@
 from openai import OpenAI
 import os
+import json
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-SYSTEM_PROMPT = """You are a music intelligence engine that produces structured, data-driven song analyses.
+SYSTEM_PROMPT = """
+You are a music analysis engine.
 
-You will be given real metadata and audio features for a song. Your job is to:
-1. Report ONLY what the data actually says — never guess or fabricate values that are marked Unknown.
-2. Interpret the numbers meaningfully (e.g. explain what a danceability of 0.85 implies, or what a high energy reading means in context).
-3. Structure your response clearly using these sections:
-   - Metadata Summary
-   - Tempo & Energy
-   - Danceability & Mood
-   - Chord Progression & Harmonic Character
-   - Overall Character & Use Cases
+Given song metadata and audio features, generate a structured analysis.
 
-If a field is Unknown, say so briefly and move on — do NOT invent a plausible-sounding substitute.
-Be specific, concise, and insightful. Avoid generic filler like "pop songs often..." unless it directly applies."""
+Return ONLY valid JSON with this structure:
 
-def analyze_with_llm(prompt: str) -> str:
+{
+  "analysis": {
+    "tempo_energy": "",
+    "danceability_mood": "",
+    "harmony": "",
+    "overall_character": ""
+  }
+}
+
+Rules:
+- Use ONLY the provided data.
+- If something is unknown, say so briefly.
+- Do NOT include metadata in your response.
+- Do NOT include any text outside JSON.
+"""
+
+
+def analyze_with_llm(features: dict) -> dict:
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {
-                    "role": "system",
-                    "content": SYSTEM_PROMPT
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": json.dumps(features)}
             ],
-            temperature=0.4  # lower = more factual, less hallucination
+            temperature=0.3
         )
 
-        return response.choices[0].message.content
+        content = response.choices[0].message.content
+        return json.loads(content)
 
     except Exception as e:
-        print("OpenAI request failed:", e)
-        return "--- Sonic AI Analysis (Fallback) ---\nLLM failed"
+        print("LLM error:", e)
+        return {
+            "analysis": {
+                "tempo_energy": "N/A",
+                "danceability_mood": "N/A",
+                "harmony": "N/A",
+                "overall_character": "N/A"
+            }
+        }
     
 #challenges
 #AcosticBrains was shut down in 2022, so we need to handle that gracefully.
