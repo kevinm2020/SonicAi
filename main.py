@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from spotify.api import get_spotify_features
+from apis.spotify_api import get_spotify_features
 from agent import analyze_with_llm
 
 app = FastAPI(title="Sonic AI API")
