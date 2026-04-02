@@ -6,17 +6,7 @@ from agent import SonicAgent
 app = FastAPI(title="Sonic AI API")
 agent = SonicAgent()
 
-print("🎧 Sonic AI Local Test\n")
 
-song = input("Enter song name: ")
-artist = input("Enter artist name: ")
-
-print("\nAnalyzing...\n")
-
-result = agent.analyze(song, artist)
-
-print("\n===== RESULT =====\n")
-print(result)
 
 app.add_middleware(
     CORSMiddleware,
@@ -77,3 +67,17 @@ async def health_check():
     }
 
 
+
+
+#For internal testing add these after line 8
+#print("🎧 Sonic AI Local Test\n")
+
+#song = input("Enter song name: ")
+#artist = input("Enter artist name: ")
+
+#print("\nAnalyzing...\n")
+
+#result = agent.analyze(song, artist)
+
+#print("\n===== RESULT =====\n")
+#print(result)
